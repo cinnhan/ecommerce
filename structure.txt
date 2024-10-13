@@ -1,0 +1,142 @@
+
+auth/
+├── jwt.go
+└── auth.go
+
+
+project
+├── cmd                     # Entry points for different services
+│   ├── api
+│   │   └── main.go         # Main API server entry point
+│   └── worker
+│       └── main.go         # Entry point for background workers
+
+
+3. pkg/myapp/server.go
+
+package myapp
+
+import (
+	"log"
+	"myapp/pkg/db"
+	"net/http"
+)
+
+type Server struct {
+	Router *http.ServeMux
+}
+
+func NewServer() *Server {
+	server := &Server{
+		Router: http.NewServeMux(),
+	}
+	server.routes()
+	return server
+}
+
+func (s *Server) routes() {
+	// Add routes here
+	s.Router.HandleFunc("/api/v1/users", userHandler)
+}
+
+func (s *Server) Start() {
+	log.Println("Starting server on port 8080...")
+	http.ListenAndServe(":8080", s.Router)
+}
+
+9. internal/auth/jwt.go
+
+package auth
+
+import "github.com/dgrijalva/jwt-go"
+
+func GenerateJWT(userID int) (string, error) {
+	// Code to generate JWT
+	return "", nil
+}
+
+10. internal/auth/auth.go
+
+package auth
+
+import "errors"
+
+func Authenticate(token string) (int, error) {
+	// Code to authenticate user using token
+	return 0, errors.New("authentication failed")
+}
+
+11. internal/middleware/auth_middleware.go
+
+package middleware
+
+import (
+	"myapp/internal/auth"
+	"net/http"
+)
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		if token == "" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		_, err := auth.Authenticate(token)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+12. api/v1/user_handler.go
+package v1
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+type UserHandler struct{}
+
+func NewUserHandler() *UserHandler {
+	return &UserHandler{}
+}
+
+func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+	users := []string{"Alice", "Bob", "Charlie"}
+	json.NewEncoder(w).Encode(users)
+}
+
+
+13. api/v1/user_service.go
+package v1
+
+import (
+	"myapp/pkg/myapp"
+)
+
+type UserService struct{}
+
+func NewUserService() *UserService {
+	return &UserService{}
+}
+
+func (s *UserService) GetAllUsers() []myapp.User {
+	return []myapp.User{
+		{ID: 1, Name: "Alice", Email: "alice@example.com"},
+		{ID: 2, Name: "Bob", Email: "bob@example.com"},
+	}
+}
+
+
+
+
+
+
+
+

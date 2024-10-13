@@ -1,0 +1,20 @@
+
+install golang-migrate
+go install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+create migration file
+migrate create -ext sql -dir database/migrations -seq create_companies_table
+migrate create -ext sql -dir database/migrations -seq create_users_table
+migrate create -ext sql -dir database/migrations -seq create_products_table
+
+migrate up
+migrate -database "mysql://root:root123@tcp(mysql:3306)/project" -path database/migrations up
+
+migrate down
+migrate -database "mysql://root:root123@tcp(mysql:3306)/project" -path database/migrations down
+
+
+define response: https://github.com/umangraval/Go-Mongodb-REST-boilerplate/blob/main/handlers/response.go
+validators: https://github.com/umangraval/Go-Mongodb-REST-boilerplate/blob/main/validators/validators.go
+
+

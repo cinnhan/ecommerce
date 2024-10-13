@@ -1,0 +1,36 @@
+public function handle()
+{
+    $uri = 'xxx';
+    $data1 = $this->requestPost($uri);
+    $data2 = $this->requestGet($uri);
+    print_r([$data1, $data2]);
+
+    echo '1'.PHP_EOL.PHP_EOL;
+}
+
+public function request(string $method, string $uri): array
+{
+    return compact('method', 'uri');
+}
+
+private function getFunctionMethod($function): array
+{
+    $requestFunction = 'request';
+    $method = str_replace($requestFunction, '', $function);
+
+    return [$requestFunction, $method];
+}
+
+public function requestGet(string $uri): array
+{
+    list($requestFunction, $method) = $this->getFunctionMethod(__FUNCTION__);
+
+    return $this->$requestFunction($method, $uri);
+}
+
+public function requestPost(string $uri): array
+{
+    list($requestFunction, $method) = $this->getFunctionMethod(__FUNCTION__);
+
+    return $this->$requestFunction($method, $uri);
+}
